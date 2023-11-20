@@ -1,24 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+
+const api = {
+  key: "b3a5683f04dcb8ec325086e5b12a0536",
+  base: "https://api.openweathermap.org/data/2.5/",
+};
 
 function App() {
+  const [searchInput, setSearchInput] = useState("");
+  const [searchCity, setSearchCity] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(false);
+  const [weatherInfo, setWeatherInfo] = useState("");
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      if (!searchCity) return;
+      setLoading(true);
+      try {
+        const url = `${api.base}weather?q=${searchCity}&units=metric&APPID=${api.key}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (response.ok) {
+          setWeatherInfo(JSON.stringify(data));
+        } else {
+          setErrorMessage(data.message);
+        }
+      } catch (error) {
+        setErrorMessage(error.message);
+      }
+      setLoading(false);
+    };
+    fetchWeatherData();
+  }, [searchCity]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSearchCity(searchInput);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      weather
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        ></input>
+        <button>Search </button>
+      </form>
+      {errorMessage ? (
+        <div style={{ color: "red" }}>{errorMessage}</div>
+      ) : (
+        <p>{weatherInfo}</p>
+      )}
+    </>
   );
 }
 
