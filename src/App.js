@@ -8,14 +8,14 @@ const api = {
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [searchCity, setSearchCity] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [weatherInfo, setWeatherInfo] = useState("");
 
   useEffect(() => {
     const fetchWeatherData = async () => {
       if (!searchCity) return;
-      setLoading(true);
+      // setLoading(true);
       try {
         const url = `${api.base}weather?q=${searchCity}&units=metric&APPID=${api.key}`;
         const response = await fetch(url);
@@ -28,7 +28,7 @@ function App() {
       } catch (error) {
         setErrorMessage(error.message);
       }
-      setLoading(false);
+      // setLoading(false);
     };
     fetchWeatherData();
   }, [searchCity]);
