@@ -8,27 +8,30 @@ const api = {
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [searchCity, setSearchCity] = useState("");
-  // const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
   const [weatherInfo, setWeatherInfo] = useState("");
 
   useEffect(() => {
     const fetchWeatherData = async () => {
       if (!searchCity) return;
-      // setLoading(true);
+      setLoading(true);
       try {
         const url = `${api.base}weather?q=${searchCity}&units=metric&APPID=${api.key}`;
         const response = await fetch(url);
         const data = await response.json();
         if (response.ok) {
-          setWeatherInfo(JSON.stringify(data));
+          setWeatherInfo(
+            `${data.name}, ${data.sys.country},${data.weather[0].description}, ${data.main.temp} `
+          );
+          setErrorMessage("");
         } else {
           setErrorMessage(data.message);
         }
       } catch (error) {
         setErrorMessage(error.message);
       }
-      // setLoading(false);
+      setLoading(false);
     };
     fetchWeatherData();
   }, [searchCity]);
@@ -49,10 +52,16 @@ function App() {
         ></input>
         <button>Search </button>
       </form>
-      {errorMessage ? (
-        <div style={{ color: "red" }}>{errorMessage}</div>
+      {loading ? (
+        <div>loading...</div>
       ) : (
-        <p>{weatherInfo}</p>
+        <>
+          {errorMessage ? (
+            <div style={{ color: "red" }}>{errorMessage}</div>
+          ) : (
+            <p>{weatherInfo}</p>
+          )}
+        </>
       )}
     </>
   );
